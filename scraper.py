@@ -18,15 +18,22 @@ job_sites = da_local, da_remote, de_local, de_remote
 #print(job_sites)
 
 
-
-playwright = sync_playwright().start()
-browser = playwright.chromium.launch(headless=False, slow_mo=1000)
-context = browser.new_context()
-page = context.new_page()
+with sync_playwright() as playwright:
+    browser = playwright.chromium.launch(headless=False, slow_mo=1000)
+    context = browser.new_context()
+    page = context.new_page()
 
 #for site in job_sites:
-page.goto(da_local)
-page.wait_for_load_state("domcontentloaded")
-page.locator("div").filter(has_text=re.compile(r"^Apply Directly$")).nth(1).click()
-
+    page.goto(da_remote)
+    page.wait_for_load_state("domcontentloaded")
+    
+    soup = BeautifulSoup(page.content(), "html.parser")
+    jobs = []
+    for job in soup.select(".relative div[data-target]"):
+        jobs.append({
+            "link": job.select_one('.relative-link::attr(href)').attrs['href'],
+        })
+        
+    print(jobs)  
+    
 
