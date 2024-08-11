@@ -19,19 +19,13 @@ job_sites = da_local, da_remote, de_local, de_remote
 
 
 playwright = sync_playwright().start()
-browser = playwright.chromium.launch(headless=False, slow_mo=200)
+browser = playwright.chromium.launch(headless=False, slow_mo=1000)
 context = browser.new_context()
 page = context.new_page()
-    
+
 #for site in job_sites:
 page.goto(da_local)
 page.wait_for_load_state("domcontentloaded")
-        
-    
-    
+page.locator("div").filter(has_text=re.compile(r"^Apply Directly$")).nth(1).click()
 
 
-
-
-    
-    
