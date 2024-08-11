@@ -1,5 +1,6 @@
 import re
-from playwright.sync_api import Playwright, sync_playwright, expect
+import nest_asyncio; nest_asyncio.apply()
+from playwright.sync_api import Playwright, sync_playwright
 
 da_remote = "https://hiring.cafe/?searchState=%7B%22hideJobTypes%22%3A%5B%22Saved%22%5D%2C%22searchQuery%22%3A%5B%22Data%20Analyst%22%5D%2C%22selectedPlaceDetail%22%3A%7B%22types%22%3A%5B%22country%22%2C%22political%22%5D%2C%22address_components%22%3A%5B%7B%22short_name%22%3A%22US%22%2C%22types%22%3A%5B%22country%22%2C%22political%22%5D%2C%22long_name%22%3A%22United%20States%22%7D%5D%2C%22place_id%22%3A%22user_country%22%2C%22formatted_address%22%3A%22United%20States%22%2C%22geometry%22%3A%7B%22location%22%3A%7B%22lat%22%3A%2239.2891%22%2C%22lng%22%3A%22-76.5583%22%7D%7D%7D%2C%22managementYoeRange%22%3A%5B0%2C0%5D%2C%22roleYoeRange%22%3A%5B0%2C2%5D%2C%22workplaceTypes%22%3A%5B%22Remote%22%5D%2C%22dateFetchedPastNDays%22%3A%228%22%2C%22educationCredentials%22%3A%5B%22(Not%20Mentioned%20in%20Job%20Description)%22%2C%22License%20or%20Certificate%22%2C%22Trade%20School%20or%20Vocational%22%2C%22High%20School%22%2C%22Associate%22%2C%22Bachelors%22%5D%7D"
 
@@ -15,21 +16,22 @@ job_sites = da_local, da_remote, de_local, de_remote
 
 #print(job_sites)
 
-def run(playwright: Playwright) -> None:
-    browser = playwright.chromium.launch(headless=False, slow_mo=200)
-    context = browser.new_context()
-    page = context.new_page()
+
+
+playwright = sync_playwright().start()
+browser = playwright.chromium.launch(headless=False, slow_mo=200)
+context = browser.new_context()
+page = context.new_page()
     
-    for site in job_sites:
-        page.goto(site)
-        page.wait_for_load_state("domcontentloaded")
+#for site in job_sites:
+page.goto(da_local)
+page.wait_for_load_state("domcontentloaded")
         
     
     
 
 
-with sync_playwright() as playwright:
-    run(playwright)
+
 
     
     
