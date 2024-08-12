@@ -20,16 +20,18 @@ def run(playwright):
         job_element.hover()
 
         # Wait for any dynamic content to load
-        page.wait_for_timeout(2000)  # Adjust time as needed
+        page.wait_for_timeout(100)  # Adjust time as needed
 
         # Extract job details
         job_title = job_element.query_selector('span.line-clamp-2').inner_text()
         company = job_element.query_selector('span.line-clamp-1').inner_text()
-        url = job_element.query_selector('a.text-black').get_attribute('href')
+        tech = job_element.query_selector('span.line-clamp-2.font-light').inner_text()
+        url = job_element.query_selector('a.z-10.text-black').get_attribute('href')
 
         jobs.append({
             'job_title': job_title,
             'company': company,
+            'tech' : tech,
             'url': url,
         })
       
