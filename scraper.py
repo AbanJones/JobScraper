@@ -18,11 +18,13 @@ job_sites = da_local, da_remote, de_local, de_remote
 
 
 # Create an empty DataFrame
+df = pd.DataFrame(columns=['job_title', 'company', 'tech', 'url'])
+
 
 
 for site in job_sites:
     def run(playwright):
-        browser = playwright.chromium.launch(headless=False, slow_mo=1000)
+        browser = playwright.chromium.launch(headless=True, slow_mo=1000)
         context = browser.new_context()
         page = context.new_page()
         
@@ -55,20 +57,23 @@ for site in job_sites:
                 'tech' : tech,
                 'url': url,
             })
+            
+            
         
-        for job in jobs:
-            print(job)
+        jobs_df = pd.DataFrame(jobs)
+        global df
+        df = pd.concat([df, jobs_df], ignore_index=True)
         
         # Close browser
         browser.close()
 
     with sync_playwright() as playwright:
-        run(playwright)
+        run(playwright) 
 
-
-
-
-        
+        # Convert jobs list to DataFrame
+    
+df = df.drop_duplicates(ignore_index=True)
+df.to_csv('jobs.csv', index=False)        
         
         
 
