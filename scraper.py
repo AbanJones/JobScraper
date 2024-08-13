@@ -68,7 +68,8 @@ def scrape():
             # Convert jobs list to DataFrame
         
     df = df.drop_duplicates(ignore_index=True)
-    df.to_csv('jobs.csv', index=False)        
+    
+    return df       
         
         
 
