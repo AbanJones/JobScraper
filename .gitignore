@@ -1,3 +1,5 @@
 scraper.venv/
 .env
 db.json
+jobs.csv
+__pycache__/
