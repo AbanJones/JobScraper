@@ -1,1 +1,3 @@
 scraper.venv/
+.env
+db.json
