@@ -3,3 +3,4 @@ scraper.venv/
 db.json
 jobs.csv
 __pycache__/
+scrape_error.log
