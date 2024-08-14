@@ -18,30 +18,28 @@ headers = {
 
  
 
-def update_page(page_id: str, data: dict):
-    url = f"https://api.notion.com/v1/pages/{page_id}"
+def create_page(data):
+    url = "https://api.notion.com/v1/pages/"
 
-    payload = {"properties": data}
+    payload = {"parent": {"database_id": os.getenv("NOTION_DATABASE")}, "properties": data}
 
-    res = requests.patch(url, json=payload, headers=headers)
+    res = requests.post(url, headers=headers, json=payload)
     print(res.status_code)
     return res
 
-""" stage = "Offer"
-color = "green"
-update_data = {"Stage": {"status": {"name": stage, "color": color}}}
 
- """
+
+
 
 
 for index, row in df.iterrows():
     data = {
-        "Job Title": {"title": [{"text": {"content": row['job_title']}}]},
-        "Company": {"rich_text": [{"text": {"content": row['company']}}]},
-        "Technologies": {"rich_text": [{"text": {"content": row['tech']}}]},
-        "URL": {"url": row['url']},
-        "Stage": {"status": {"name": "To apply", "color": "default"}},  # Example status
+        "Stage": {"status": {"name": "To apply", "color": "default"}},  # default status
+        "Job Title": {"rich_text": [{"text": {"content": row['job_title']}}]},
+        "Company": {"title": [{"text": {"content": row['company']}}]},
+        "Tech Stack": {"rich_text": [{"text": {"content": row['tech']}}]},
+        "Link": {"url": row['url']},
+        
     }
 
-
-    update_page(os.getenv("NOTION_PAGE_ID"), data)
+    create_page(data)
