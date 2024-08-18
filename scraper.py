@@ -73,8 +73,11 @@ def scrape():
     return df
 
 
-df = scrape()
-df.to_csv("test.csv", index = False)
+
+
+#test lines
+""" df = scrape()
+df.to_csv("test.csv", index = False) """
 
 
     
