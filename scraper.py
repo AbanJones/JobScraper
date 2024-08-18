@@ -39,7 +39,7 @@ def scrape():
             # Extract job details
             job_title = job_element.query_selector('span.line-clamp-2').inner_text()
             company = job_element.query_selector('span.line-clamp-1').inner_text()
-            tech = job_element.query_selector('span.line-clamp-2.font-light').inner_text()
+            tech = job_element.query_selector('span.line-clamp-2.font-light').inner_text() if job_element.query_selector('span.line-clamp-2.font-light') else None,
             url = job_element.query_selector('a.z-10.text-black').get_attribute('href')
 
             jobs.append({
