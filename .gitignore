@@ -1,6 +1,6 @@
 scraper.venv/
 .env
 db.json
-jobs.csv
+*.csv
 __pycache__/
 scrape_error.log
