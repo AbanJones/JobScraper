@@ -5,7 +5,7 @@ import logging
 import json
 from datetime import datetime, timezone
 from dotenv import load_dotenv, dotenv_values
-from scraper import scrape
+from scraper import *
 
 logging.basicConfig(filename = "scrape_error.log", level = logging.ERROR, format = "%(asctime)s - %(levelname)s - %(message)s")
 
@@ -29,15 +29,15 @@ def main():
             payload = {"parent": {"database_id": os.getenv("NOTION_DATABASE")}, "properties": data}
 
             res = requests.post(url, headers=headers, json=payload)
-            print(res.status_code)
+            
+            if res.status_code != 200:
+                logging.error(f"Failed to create page for {data['Job Title']['rich_text'][0]['text']['content']} with status code {res.status_code} and response: {res.text}")
+            
             return res
 
 
-
-
-
-
         for index, row in df.iterrows():
+           
             data = {
                 "Stage": {"status": {"name": "To apply", "color": "default"}},  # default status
                 "Job Title": {"rich_text": [{"text": {"content": row['job_title']}}]},
