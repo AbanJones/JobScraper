@@ -32,7 +32,8 @@ def get_pages(num_pages=None):
     response = requests.post(url, json=payload, headers=headers)
 
     data = response.json()
-
+    with open('db.json', 'w', encoding='utf8') as f:
+        json.dump(data, f, ensure_ascii=False, indent=4)
     results = data["results"]
     while data.get("has_more") and get_all:
         payload = {"page_size": page_size, "start_cursor": data["next_cursor"]}
@@ -91,4 +92,4 @@ for page in pages:
     }
 
     # Insert data into Supabase
-    insert_into_supabase(data)
+    #insert_into_supabase(data)
