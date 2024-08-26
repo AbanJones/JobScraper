@@ -79,7 +79,7 @@ for page in pages:
     url = props["Link"]["url"]
     company = props["Company"]["title"][0]["text"]["content"]
 
-
+#11
     current_timestamp = datetime.now().isoformat()
 
     # Prepare data to insert into Supabase
