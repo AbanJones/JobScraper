@@ -1,7 +1,6 @@
 import requests
 import os
 import json
-from supabase import create_client, Client
 from postgrest.exceptions import APIError
 from dotenv import load_dotenv, dotenv_values
 from datetime import datetime
@@ -11,7 +10,6 @@ from datetime import datetime
 
 load_dotenv()
 
-supabase: Client = create_client(os.getenv("SUPABASE_URL"), os.getenv("SUPABASE_KEY"))
 
 headers = {
     "Authorization": "Bearer " + os.getenv("NOTION_API_TOKEN"),
@@ -43,26 +41,7 @@ def get_pages(num_pages=None):
 
     return results
 
-def insert_into_supabase(data):
-    """
-    Insert data into the Supabase table, skip if duplicate.
-    """
-    try:
-        response = supabase.table('jobs').insert(data).execute()
-        print("Row successfully inserted into Supabase.")
-    except APIError as e:
-        error_details = e.args[0]  # Extract the error details
 
-        try:
-            error_details = json.loads(error_details)  # Attempt to parse as JSON
-        except (json.JSONDecodeError, TypeError):
-            pass  # If it's not JSON, keep it as a string
-
-        # Handle as a dictionary if possible
-        if isinstance(error_details, dict) and error_details.get('code') == '23505':  # Duplicate key error
-            print(f"Duplicate entry found for URL {data['Link']}, skipping.")
-        else:
-            print("Failed to insert row into Supabase:", error_details)
 
 # Fetch pages from Notion
 pages = get_pages()
@@ -79,7 +58,7 @@ for page in pages:
     url = props["Link"]["url"]
     company = props["Company"]["title"][0]["text"]["content"]
 
-#11
+
     current_timestamp = datetime.now().isoformat()
 
     # Prepare data to insert into Supabase
@@ -91,5 +70,3 @@ for page in pages:
         "added_date": current_timestamp
     }
 
-    # Insert data into Supabase
-    #insert_into_supabase(data)

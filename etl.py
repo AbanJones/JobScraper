@@ -37,13 +37,15 @@ def main():
 
 
         for index, row in df.iterrows():
-           
+            current_time = datetime.now()
+            formatted_time = current_time.strftime("%m-%d-%Y")
             data = {
                 "Stage": {"status": {"name": "To apply", "color": "default"}},  # default status
                 "Job Title": {"rich_text": [{"text": {"content": row['job_title']}}]},
                 "Company": {"title": [{"text": {"content": row['company']}}]},
                 "Tech Stack": {"rich_text": [{"text": {"content": row['tech']}}]},
                 "Link": {"url": row['url']},
+                "Added Date": {"date": formatted_time}
                 
             }
 
