@@ -11,7 +11,7 @@ logging.basicConfig(filename = "scrape_error.log", level = logging.ERROR, format
 
 def main():
     try:
-        df = scrape()
+        daily_jobs = scrape()
         load_dotenv()
 
         headers = {
@@ -20,8 +20,53 @@ def main():
             "Notion-Version": "2022-06-28",
         }
 
+        def get_pages(num_pages=None):
+            """
+            If num_pages is None, get all pages, otherwise just the defined number.
+            """
+            url = f"https://api.notion.com/v1/databases/{os.getenv('NOTION_DATABASE')}/query"
 
+            get_all = num_pages is None
+            page_size = 100 if get_all else num_pages
+
+            payload = {"page_size": page_size}
+            response = requests.post(url, json=payload, headers=headers)
+
+            data = response.json()
+            with open('db.json', 'w', encoding='utf8') as f:
+                json.dump(data, f, ensure_ascii=False, indent=4)
+            results = data["results"]
+            while data.get("has_more") and get_all:
+                payload = {"page_size": page_size, "start_cursor": data["next_cursor"]}
+                response = requests.post(url, json=payload, headers=headers)
+                data = response.json()
+                results.extend(data["results"])
+
+            return results
         
+        def process_historical_jobs(results):
+            jobs_data = []
+            for result in results:
+                try:
+                    job_title = result["properties"]["Job Title"]["rich_text"][0]["text"]["content"]
+                    company = result["properties"]["Company"]["title"][0]["text"]["content"]
+                    tech_stack = result["properties"]["Tech Stack"]["rich_text"][0]["text"]["content"]
+                    url = result["properties"]["Link"]["url"]
+                    added_date = result["properties"]["Added Date"]["date"]["start"]
+
+                    jobs_data.append({
+                        "job_title": job_title,
+                        "company": company,
+                        "tech": tech_stack,
+                        "url": url,
+                        "added_date": added_date
+                    })
+                except KeyError as e:
+                    logging.error(f"Key error when processing result: {e}")
+            
+            return pd.DataFrame(jobs_data)
+        
+        historical_jobs = 
 
         def create_page(data):
             url = "https://api.notion.com/v1/pages/"
@@ -36,7 +81,7 @@ def main():
             return res
 
 
-        for index, row in df.iterrows():
+        for index, row in daily_jobs.iterrows():
             current_time = datetime.now()
             formatted_time = current_time.strftime("%Y-%m-%d")
             data = {
