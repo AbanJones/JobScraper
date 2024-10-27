@@ -52,7 +52,7 @@ def main():
                     company = result["properties"]["Company"]["title"][0]["text"]["content"]
                     tech_stack = result["properties"]["Tech Stack"]["rich_text"][0]["text"]["content"]
                     url = result["properties"]["Link"]["url"]
-                    added_date = result["properties"]["Added Date"]["date"]["start"]
+                    added_date = result["properties"]["Added Date"]["date"]["start"] if result["properties"]["Added Date"]["date"] else None
 
                     jobs_data.append({
                         "job_title": job_title,
@@ -66,8 +66,16 @@ def main():
             
             return pd.DataFrame(jobs_data)
         
-        historical_jobs = 
-
+        historical_jobs_results = get_pages()
+        historical_jobs = process_historical_jobs(historical_jobs_results)
+        
+        if 'added_date' not in historical_jobs.columns:
+            historical_jobs['added_date'] = pd.NaT
+            
+        all_jobs= pd.concat([daily_jobs, historical_jobs], ignore_index = True)
+        all_jobs = all_jobs.sort_values("added_date")
+        all_jobs = all_jobs.drop_duplicates(subset=["job_title", "company", "tech"], keep="first").reset_index(drop=True)                                          
+                                        
         def create_page(data):
             url = "https://api.notion.com/v1/pages/"
 
@@ -81,7 +89,7 @@ def main():
             return res
 
 
-        for index, row in daily_jobs.iterrows():
+        for index, row in all_jobs.iterrows():
             current_time = datetime.now()
             formatted_time = current_time.strftime("%Y-%m-%d")
             data = {
